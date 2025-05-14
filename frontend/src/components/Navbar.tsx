@@ -12,7 +12,7 @@ const Navbar = () => {
 
     setTimeout(() => {
       location.replace(pathname);
-    }, 1500);
+    }, 1000);
   };
 
   return (
@@ -24,6 +24,7 @@ const Navbar = () => {
 
         {userData ? (
           <div className="flex items-center space-x-6">
+            <p className="text-md text-gray-800 font-semibold">Welcome, {userData.user.username}</p>
             <li className="duration-200 text-md text-gray-700 font-semibold">
               <NavLink to="/todos">Todos</NavLink>
             </li>

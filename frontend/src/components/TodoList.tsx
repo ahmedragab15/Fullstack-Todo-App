@@ -1,91 +1,52 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "./ui/Button";
-import Input from "./ui/Input";
-import Textarea from "./ui/Textarea";
+import axiosInstance from "../config/axios.config";
 
 const TodoList = () => {
   const storageKey = "loggedInUser";
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
+  const token = userData?.jwt;
 
-  const [queryVersion, setQueryVersion] = useState(1);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
-  const [isOpenAddModal, setIsOpenAddModal] = useState(false);
+  const [todos, setTodos] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [todoToAdd, setTodoToAdd] = useState({
-    title: "",
-    description: "",
-  });
-  const [todoToEdit, setTodoToEdit] = useState({
-    id: 0,
-    title: "",
-    description: "",
-  });
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await axiosInstance.get("/users/me?populate=todos", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setTodos(res.data.todos);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [token]);
 
-  // ** Handlers
-  const onCloseAddModal = () => {
-    setTodoToAdd({
-      title: "",
-      description: "",
-    });
-    setIsOpenAddModal(false);
-  };
+  //* Renders
+  const renderTodos = todos.map(({ documentId, title, description }) => (
+    <div key={documentId} className="flex items-center justify-between hover:bg-gray-100 duration-300 p-3 rounded-md even:bg-gray-100">
+      <p className="w-full font-semibold">{title}</p>
+      <p className="w-full font-semibold">{description}</p>
+      <div className="flex items-center justify-end w-full space-x-3">
+        <Button size={"sm"}>Edit</Button>
+        <Button variant={"danger"} size={"sm"}>
+          Remove
+        </Button>
+      </div>
+    </div>
+  ));
 
-  const onOpenAddModal = () => {
-    setIsOpenAddModal(true);
-  };
-
-  const onCloseEditModal = () => {
-    setTodoToEdit({
-      id: 0,
-      title: "",
-      description: "",
-    });
-    setIsEditModalOpen(false);
-  };
-  const onOpenEditModal = (todo) => {
-    setTodoToEdit(todo);
-    setIsEditModalOpen(true);
-  };
-
-  const closeConfirmModal = () => {
-    setTodoToEdit({
-      id: 0,
-      title: "",
-      description: "",
-    });
-    setIsOpenConfirmModal(false);
-  };
-  const openConfirmModal = (todo) => {
-    setTodoToEdit(todo);
-    setIsOpenConfirmModal(true);
-  };
-
-  const onChangeAddTodoHandler = (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { value, name } = evt.target;
-
-    setTodoToAdd({
-      ...todoToAdd,
-      [name]: value,
-    });
-  };
-
-  const onChangeHandler = (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { value, name } = evt.target;
-
-    setTodoToEdit({
-      ...todoToEdit,
-      [name]: value,
-    });
-  };
+  if (isLoading) return <h3>Loading...</h3>;
 
   return (
     <div className="space-y-1">
-      <div className="w-fit mx-auto my-10"></div>
-
-      <h3>No todos yet!</h3>
+      {todos.length ? renderTodos : <h3>No todos yet!</h3>}
     </div>
   );
 };

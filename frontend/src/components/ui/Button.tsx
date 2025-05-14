@@ -45,6 +45,7 @@ const Button = ({ type, variant, size, fullWidth, isLoading, className, children
       {...props}
       disabled={isLoading}
     >
+
       {isLoading ? (
         <svg
           className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
@@ -60,6 +61,7 @@ const Button = ({ type, variant, size, fullWidth, isLoading, className, children
           ></path>
         </svg>
       ) : null}
+      
       {children}
     </button>
   );

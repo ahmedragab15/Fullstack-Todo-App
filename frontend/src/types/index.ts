@@ -1,1 +1,0 @@
-export type TinputsName = "username" | "email" | "password";
