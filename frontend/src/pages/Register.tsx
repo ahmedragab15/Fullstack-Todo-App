@@ -1,6 +1,10 @@
 import { SubmitHandler, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
+import InputErrorMessage from "../components/InputErrorMessage";
+import { registerInputs } from "../data";
+import { registerSchema } from "../validation";
 
 interface IFormInput {
   username: string;
@@ -8,27 +12,31 @@ interface IFormInput {
   password: string;
 }
 
+//* Handlers 
 const RegisterPage = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
-  } = useForm<IFormInput>();
+  } = useForm<IFormInput>({
+    resolver: yupResolver(registerSchema),
+  });
 
-  const onSubmit: SubmitHandler<IFormInput> = (data) => console.log("data ",data);
+  const onSubmit: SubmitHandler<IFormInput> = (data) => console.log("data ", data);
 
+  //* Renders
+  const renderRegisterInputs = registerInputs.map((input, idx) => (
+    <div className="form-control" key={idx}>
+      <Input type={input.type} placeholder={input.placeholder} {...register(input.name)} />
+      {errors?.[input.name] && <InputErrorMessage message={errors[input.name]?.message} />}
+    </div>
+  ));
   
   return (
     <div className="max-w-md mx-auto">
       <h2 className="text-center mb-4 text-3xl font-semibold">Register to get access!</h2>
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-        <Input placeholder="Username" {...register("username", { required: "username is required", minLength:{value: 5, message: "username must be at least 5 characters"} })} />
-        {errors.username && <span>{errors.username.message}</span>}
-        <Input placeholder="Email address" {...register("email", { required: "email is required", pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: "invalid email address" } })} />
-        {errors.email && <span>{errors.email.message}</span>}
-        <Input placeholder="Password" {...register("password", { required: "password is required", minLength: { value: 6, message: "password must be at least 6 characters" } })} />
-        {errors.password && <span>{errors.password.message}</span>}
+        {renderRegisterInputs}
         <Button fullWidth>Register</Button>
       </form>
     </div>
