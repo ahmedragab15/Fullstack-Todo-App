@@ -10,6 +10,13 @@ export interface ILoginInput {
   placeholder: string;
 }
 
+export interface ITodo {
+  documentId: string;
+  title: string;
+  description: string;
+  id?:number
+}
+
 export interface IErrorResponse {
   error: {
     message?: string;
