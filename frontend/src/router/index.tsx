@@ -14,7 +14,6 @@ const userData = userDataString ? JSON.parse(userDataString) : null;
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      {/* Root Layout */}
       <Route path="/" element={<RootLayout />} errorElement={<ErrorHandler />}>
         <Route
           index
@@ -49,8 +48,6 @@ const router = createBrowserRouter(
           }
         />
       </Route>
-
-      {/* Page Not Found */}
       <Route path="*" element={<PageNotFound />} />
     </>
   )

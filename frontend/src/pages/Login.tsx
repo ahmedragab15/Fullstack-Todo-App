@@ -32,8 +32,6 @@ const LoginPage = () => {
     setIsLoading(true);
     try {
       const res = await axiosInstance.post("/auth/local", data);
-      console.log(res);
-      
       if (res.status === 200) {
         toast.success("You are logged successfully, you will be redirected to Home page", {
           duration: 1000,

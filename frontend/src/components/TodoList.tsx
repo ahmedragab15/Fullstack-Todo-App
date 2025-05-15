@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
 import Button from "./ui/Button";
-import axiosInstance from "../config/axios.config";
+import useAuthenticatedQuery from "../hooks/useAuthenticatedQuery";
 
 const TodoList = () => {
   const storageKey = "loggedInUser";
@@ -8,28 +7,20 @@ const TodoList = () => {
   const userData = userDataString ? JSON.parse(userDataString) : null;
   const token = userData?.jwt;
 
-  const [todos, setTodos] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { isLoading, data } = useAuthenticatedQuery({
+    queryKey: ["todos"],
+    url: "/users/me?populate=todos",
+    config: {
+      headers: {
+        Authorization: `bearer ${token}`,
+      },
+    },
+  });
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await axiosInstance.get("/users/me?populate=todos", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setTodos(res.data.todos);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [token]);
+  if (isLoading) return <h3>Loading...</h3>;
 
   //* Renders
-  const renderTodos = todos.map(({ documentId, title, description }) => (
+  const renderTodos = data.todos.map(({ documentId, title, description }: { documentId: string; title: string; description: string }) => (
     <div key={documentId} className="flex items-center justify-between hover:bg-gray-100 duration-300 p-3 rounded-md even:bg-gray-100">
       <p className="w-full font-semibold">{title}</p>
       <p className="w-full font-semibold">{description}</p>
@@ -42,13 +33,7 @@ const TodoList = () => {
     </div>
   ));
 
-  if (isLoading) return <h3>Loading...</h3>;
-
-  return (
-    <div className="space-y-1">
-      {todos.length ? renderTodos : <h3>No todos yet!</h3>}
-    </div>
-  );
+  return <div className="space-y-1">{data.todos.length ? renderTodos : <h3>No todos yet!</h3>}</div>;
 };
 
 export default TodoList;
