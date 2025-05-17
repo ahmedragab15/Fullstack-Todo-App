@@ -1,11 +1,13 @@
 import Button from "./ui/Button";
-import useAuthenticatedQuery from "../hooks/useAuthenticatedQuery";
+import useCustomQuery from "../hooks/useCustomQuery";
 import Modal from "./ui/Modal";
 import { ChangeEvent, FormEvent, useState } from "react";
 import Input from "./ui/Input";
 import Textarea from "./ui/Textarea";
 import { ITodo } from "../interfaces";
 import axiosInstance from "../config/axios.config";
+import TodoSkeleton from "./TodoSkeleton";
+import { faker } from "@faker-js/faker";
 
 const TodoList = () => {
   //* JWT
@@ -13,6 +15,8 @@ const TodoList = () => {
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
   const token = userData?.jwt;
+
+  const [queryVersion, setQueryVersion] = useState(1);
 
   //*Edit Todo
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -26,9 +30,16 @@ const TodoList = () => {
   //*remove todo
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
 
+  //*add todo
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [todoToAdd, setTodoToAdd] = useState({
+    title: "",
+    description: "",
+  });
+
   //*fetch data
-  const { isLoading, data } = useAuthenticatedQuery({
-    queryKey: ["todoList", `${todoToEdit.documentId}`],
+  const { isLoading, data } = useCustomQuery({
+    queryKey: ["todoList", `${queryVersion}`],
     url: "/users/me?populate=todos",
     config: {
       headers: {
@@ -38,6 +49,56 @@ const TodoList = () => {
   });
 
   //* Handlers
+
+  //*Add
+  const onOpenAddModal = () => {
+    setIsAddModalOpen(true);
+  };
+
+  const onCloseAddModal = () => {
+    setTodoToAdd({
+      title: "",
+      description: "",
+    });
+    setIsAddModalOpen(false);
+  };
+
+  const onChangeAddTodoHandler = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setTodoToAdd({
+      ...todoToAdd,
+      [name]: value,
+      [name]: value,
+    });
+  };
+
+  const onSubmitAddTodo = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsUpdating(true);
+    const { title, description } = todoToAdd;
+    try {
+      if (title.trim() && description.trim()) {
+        const res = await axiosInstance.post(
+          `/todos`,
+          { data: { title, description, user: [userData.user.id] } },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (res.status >= 200 && res.status < 300) {
+          onCloseAddModal();
+          setQueryVersion((prev) => prev + 1);
+        }
+      }
+      // todo toaster "fill the inputs"
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   //*Edit
   const onOpenEditModal = (todo: ITodo) => {
@@ -68,23 +129,28 @@ const TodoList = () => {
     setIsUpdating(true);
     const { title, description, documentId } = todoToEdit;
     try {
-      const res = await axiosInstance.put(
-        `/todos/${documentId}`,
-        { data: { title, description } },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      if (title.trim() && description.trim()) {
+        const res = await axiosInstance.put(
+          `/todos/${documentId}`,
+          { data: { title, description } },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (res.status >= 200 && res.status < 300) {
+          onCloseEditModal();
+          setQueryVersion((prev) => prev + 1);
         }
-      );
-      if (res.status === 200) onCloseEditModal();
+      }
+      // todo toaster "fill the inputs"
     } catch (error) {
       console.log(error);
     } finally {
       setIsUpdating(false);
     }
   };
-
 
   //*Remove
   const onOpenRemoveModal = (todo: ITodo) => {
@@ -104,27 +170,71 @@ const TodoList = () => {
   const onRemoveTodo = async () => {
     setIsUpdating(true);
     try {
-      const res = await axiosInstance.delete(
-        `/todos/${todoToEdit.documentId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (res.status === 204) onCloseRemoveModal();
+      const res = await axiosInstance.delete(`/todos/${todoToEdit.documentId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status >= 200 && res.status < 300) {
+        onCloseRemoveModal();
+        setQueryVersion((prev) => prev + 1);
+      }
     } catch (error) {
       console.log(error);
-    }finally{
+    } finally {
       setIsUpdating(false);
     }
   };
 
+  //*Generate Todos
+  const onGenerateTodos = async () => {
+    for (let i = 0; i < 100; i++) {
+      try {
+        await axiosInstance.post(
+          `/todos`,
+          { data: { title: faker.lorem.words(3), description: faker.lorem.paragraph(2), user: [userData.user.id] } },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
   //* Renders
-  if (isLoading) return <h3>Loading...</h3>;
+  if (isLoading)
+    return (
+      <div className="space-y-1 p-3">
+        {Array.from({ length: 3 }, (_, idx) => (
+          <TodoSkeleton key={idx} />
+        ))}
+      </div>
+    );
 
   return (
     <div className="space-y-1">
+      <div className="w-fit mx-auto my-10">
+        {isLoading ? (
+          <div className="flex items-center space-x-2">
+            <div className="w-32 h-9 bg-gray-300 rounded-md dark:bg-gray-400"></div>
+            <div className="w-32 h-9 bg-gray-300 rounded-md dark:bg-gray-400"></div>
+          </div>
+        ) : (
+          <div className="flex items-center space-x-2">
+            <Button size={"sm"} onClick={onOpenAddModal}>
+              Post new todo
+            </Button>
+            <Button variant={"outline"} size={"sm"} isLoading={isUpdating} onClick={onGenerateTodos}>
+              Generate todos
+            </Button>
+          </div>
+        )}
+      </div>
+
       {data.todos.length ? (
         data.todos.map((todo: ITodo) => (
           <div key={todo.documentId} className="flex items-center justify-between hover:bg-gray-100 duration-300 p-3 rounded-md even:bg-gray-100">
@@ -143,6 +253,22 @@ const TodoList = () => {
       ) : (
         <h3>No todos yet!</h3>
       )}
+
+      {/* Add Todo Modal */}
+      <Modal isOpen={isAddModalOpen} closeModal={onCloseAddModal} title="Add a new Todo">
+        <form className="space-y-3" onSubmit={onSubmitAddTodo}>
+          <Input name="title" value={todoToAdd.title} onChange={onChangeAddTodoHandler} />
+          <Textarea name="description" value={todoToAdd.description} onChange={onChangeAddTodoHandler} />
+          <div className="flex items-center w-full space-x-3 mt-4">
+            <Button type="submit" size={"sm"} isLoading={isUpdating}>
+              Add
+            </Button>
+            <Button type="button" variant={"cancel"} size={"sm"} onClick={onCloseAddModal}>
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Edit Todo Modal */}
       <Modal isOpen={isEditModalOpen} closeModal={onCloseEditModal} title="Edit This Todo">
