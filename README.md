@@ -27,24 +27,35 @@ A modern and responsive Todo Application with full authentication and CRUD capab
 
 * 🔐 **Authentication** (Register / Login)
 * ✅ **Add, Edit, Delete** todos
-* 🧪 **Generate fake todos**
 * ⏳ **Pagination** with option to show X todos per page
 * 📅 **Sort todos** by latest or oldest
-* 💡 **Light/Dark Mode** toggle
-* ⚙️ **Persistent UI state** (stored in localStorage)
+* 💡 **Toggle Light/Dark Mode**
+* ⚙️ **Persistent UI state**
+* 🧪 **Generate fake todos**
 
 ---
 
-### 📂 Folder Structure
+### 📸 Screenshots
 
-```
-/fullstack-todo-app
-  ├── /frontend
-  │   ├── src/
-  │   └── ...
-  └── /backend
-      └── (Strapi project)
-```
+   <img src="frontend/public/register.png" >
+  <br /> 
+
+   <img src="frontend/public/home.png" >
+  <br /> 
+ 
+   <img src="frontend/public/add-todo-modal.png" >
+  <br /> 
+ 
+   <img src="frontend/public/todo-pagination-light.png" >
+  <br /> 
+
+   <img src="frontend/public/todo-pagination.png" >
+ 
+---
+
+## 🚀 Live Demo
+
+[🔗 View Live Demo]()
 
 ---
 
@@ -74,29 +85,3 @@ npm run dev
 ```
 
 > Make sure the backend runs at `http://localhost:1337` or update the `axios` base URL accordingly in the frontend config.
-
----
-
-### 📸 Screenshots
-
-> Add images of:
->
-> * Login/Register form
-> * Todo list with pagination
-> * Modal for editing
-> * Light/Dark mode UI
-
----
-
-### 📤 Deployment
-
-You can deploy the frontend using:
-
-* [Vercel](https://vercel.com/)
-* [Netlify](https://www.netlify.com/)
-
-And backend using:
-
-* [Render](https://render.com/)
-* [Railway](https://railway.app/)
-* VPS or custom server
