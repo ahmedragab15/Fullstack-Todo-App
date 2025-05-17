@@ -86,7 +86,7 @@ const RegisterPage = () => {
         </Button>
         <p className="text-center text-sm text-gray-500 space-x-2">
           <span>have an account?</span>
-          <Link to={"/login"} className="underline text-indigo-600 font-semibold">
+          <Link to={"/login"} className="underline text-blue-600 dark:text-indigo-600 font-semibold">
             Login
           </Link>
         </p>

@@ -21,13 +21,13 @@ const Modal = ({ isOpen, closeModal, title, description, children }: IProps) => 
                     <div className="fixed inset-0 overflow-y-auto">
                         <div className="flex min-h-full items-center justify-center p-4 text-center">
                             <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
-                                <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 dark:text-white p-6 text-left align-middle shadow-xl dark:shadow-white/5 transition-all">
                                     {title && (
-                                        <DialogTitle as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                                        <DialogTitle as="h3" className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
                                             {title}
                                         </DialogTitle>
                                     )}
-                                    {description && <p className="text-sm text-gray-500 mt-3">{description}</p>}
+                                    {description && <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">{description}</p>}
                                     <div className="mt-4">{children}</div>
                                 </DialogPanel>
                             </TransitionChild>

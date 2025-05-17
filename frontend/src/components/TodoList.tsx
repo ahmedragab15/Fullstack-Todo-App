@@ -7,7 +7,7 @@ import Textarea from "./ui/Textarea";
 import { ITodo } from "../interfaces";
 import axiosInstance from "../config/axios.config";
 import TodoSkeleton from "./TodoSkeleton";
-import { faker } from "@faker-js/faker";
+import { onGenerateTodos } from "../utils/functions";
 
 const TodoList = () => {
   //* JWT
@@ -68,7 +68,6 @@ const TodoList = () => {
     setTodoToAdd({
       ...todoToAdd,
       [name]: value,
-      [name]: value,
     });
   };
 
@@ -119,7 +118,6 @@ const TodoList = () => {
     const { name, value } = e.target;
     setTodoToEdit({
       ...todoToEdit,
-      [name]: value,
       [name]: value,
     });
   };
@@ -186,25 +184,6 @@ const TodoList = () => {
     }
   };
 
-  //*Generate Todos
-  const onGenerateTodos = async () => {
-    for (let i = 0; i < 100; i++) {
-      try {
-        await axiosInstance.post(
-          `/todos`,
-          { data: { title: faker.lorem.words(3), description: faker.lorem.paragraph(2), user: [userData.user.id] } },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
-
   //* Renders
   if (isLoading)
     return (
@@ -237,7 +216,7 @@ const TodoList = () => {
 
       {data.todos.length ? (
         data.todos.map((todo: ITodo) => (
-          <div key={todo.documentId} className="flex items-center justify-between hover:bg-gray-100 duration-300 p-3 rounded-md even:bg-gray-100">
+          <div key={todo.documentId} className="flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700 duration-300 p-3 rounded-md even:bg-gray-200 dark:even:bg-gray-800 text-gray-700 dark:text-white">
             <p className="w-full font-semibold">{todo.title}</p>
             <p className="w-full font-semibold">{todo.description}</p>
             <div className="flex items-center justify-end w-full space-x-3">

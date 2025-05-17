@@ -83,7 +83,7 @@ const LoginPage = () => {
         </Button>
         <p className="text-center text-sm text-gray-500 space-x-2">
           <span>No account?</span>
-          <Link to={"/register"} className="underline text-indigo-600 font-semibold">
+          <Link to={"/register"} className="underline text-blue-600 dark:text-indigo-600 font-semibold">
             Register
           </Link>
         </p>

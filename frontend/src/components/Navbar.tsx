@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import Button from "./ui/Button";
-import ModeSwitchDropdown from "./ui/ModeSwitchDropdown";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 const Navbar = () => {
   const { pathname } = useLocation();
@@ -17,19 +17,16 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="max-w-2xl mx-auto mt-7 mb-20 px-3 py-5">
-      <ul className="flex items-center justify-between">
-        <li className="duration-200 font-semibold text-md text-gray-700 flex items-center gap-4">
+    <nav className="max-w-2xl mx-auto pt-7 mb-20 px-3 pb-5">
+      <ul className="flex items-center justify-between text-gray-700 dark:text-white">
+        <li className="duration-200 font-semibold text-md flex items-center gap-4">
           <NavLink to="/">Home</NavLink>
-          <ModeSwitchDropdown />
+          <ThemeSwitcher />
         </li>
-
         {userData ? (
           <div className="flex items-center space-x-6">
-            <li className="duration-200 text-md text-gray-700 font-semibold">
-              <NavLink to="/profile">Welcome, {userData.user.username}</NavLink>
-            </li>
-            <li className="duration-200 text-md text-gray-700 font-semibold">
+            <li className="duration-200 text-md font-semibold">Welcome, {userData.user.username}</li>
+            <li className="duration-200 text-md font-semibold">
               <NavLink to="/todos">Todos</NavLink>
             </li>
             <Button className="cursor-pointer" size={"sm"} onClick={onLogout}>

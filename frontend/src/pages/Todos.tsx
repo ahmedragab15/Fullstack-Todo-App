@@ -3,10 +3,8 @@ import Paginator from "../components/Paginator";
 import TodoSkeleton from "../components/TodoSkeleton";
 import useCustomQuery from "../hooks/useCustomQuery";
 import { ITodo } from "../interfaces";
-
-import axiosInstance from "../config/axios.config";
-import { faker } from "@faker-js/faker";
 import Button from "../components/ui/Button";
+import { onGenerateTodos } from "../utils/functions";
 
 const TodosPage = () => {
   //* JWT
@@ -21,7 +19,7 @@ const TodosPage = () => {
 
   //*fetch data
   const { isLoading, data, isFetching } = useCustomQuery({
-    queryKey: [`todos-page-${page}`, `${pageSize}`,`${sortBy}`],
+    queryKey: [`todos-page-${page}`, `${pageSize}`, `${sortBy}`],
     url: `/todos?pagination[pageSize]=${pageSize}&pagination[page]=${page}&sort=createdAt:${sortBy}`,
     config: {
       headers: {
@@ -30,31 +28,13 @@ const TodosPage = () => {
     },
   });
 
-  const onClickPrev = () => {
-    setPage((prev) => prev - 1);
-  };
+  const onClickPrev = () => setPage((prev) => prev - 1);
 
-  const onClickNext = () => {
-    setPage((prev) => prev + 1);
-  };
+  const onClickNext = () => setPage((prev) => prev + 1);
 
-  const onGenerateTodos = async () => {
-    for (let i = 0; i < 100; i++) {
-      try {
-        await axiosInstance.post(
-          "/todos",
-          { data: { title: faker.word.words(5), description: faker.lorem.paragraph(2) } },
-          {
-            headers: {
-              Authorization: `Bearer ${userData.jwt}`,
-            },
-          }
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
+  const onClickFirst = () => setPage(1);
+
+  const onClickLast = () => setPage(data?.meta?.pagination?.pageCount);
 
   const onChangePageSize = (e: ChangeEvent<HTMLSelectElement>) => setPageSize(+e.target.value);
 
@@ -73,17 +53,18 @@ const TodosPage = () => {
   return (
     <section>
       <div className="flex items-center justify-between space-x-2">
-        <Button size={"sm"} onClick={onGenerateTodos} title="Generate 100 records">
+        <Button size={"sm"} onClick={onGenerateTodos} title="Generate 100 records" isLoading={isLoading || isFetching}>
           Generate todos
         </Button>
+
         <div className="flex items-center justify-between space-x-2 text-md">
-          <select className="border-2 border-indigo-600 rounded-md p-2" value={sortBy} onChange={onChangeSortBy}>
+          <select className="border-2 border-blue-500 dark:border-indigo-600 rounded-md p-2 dark:bg-gray-800" value={sortBy} onChange={onChangeSortBy}>
             <option disabled>Sort by</option>
             <option value="DESC">Latest</option>
             <option value="ASC">Oldest</option>
           </select>
 
-          <select className="border-2 border-indigo-600 rounded-md p-2" value={pageSize} onChange={onChangePageSize}>
+          <select className="border-2 border-blue-500 dark:border-indigo-600 rounded-md p-2 dark:bg-gray-800" value={pageSize} onChange={onChangePageSize}>
             <option disabled>Page size</option>
             <option value={10}>10</option>
             <option value={25}>25</option>
@@ -93,10 +74,10 @@ const TodosPage = () => {
         </div>
       </div>
 
-      <div className="my-20 space-y-6">
+      <div className="py-20 space-y-6">
         {data.data.length ? (
           data.data.map((todo: ITodo) => (
-            <div key={todo.documentId} className="flex items-center justify-between hover:bg-gray-100 duration-300 p-3 rounded-md even:bg-gray-100">
+            <div key={todo.documentId} className="flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700 duration-300 p-3 rounded-md even:bg-gray-200 dark:even:bg-gray-800 text-gray-700 dark:text-white">
               <h3 className="w-full font-semibold">{todo.title}</h3>
               <p className="w-full font-semibold">{todo.description}</p>
             </div>
@@ -104,7 +85,7 @@ const TodosPage = () => {
         ) : (
           <h3>No todos yet!</h3>
         )}
-        <Paginator page={page} pageCount={data?.meta?.pagination?.pageCount} total={data?.meta?.pagination?.total} isLoading={isLoading || isFetching} onClickPrev={onClickPrev} onClickNext={onClickNext} />
+        <Paginator page={page} pageCount={data?.meta?.pagination?.pageCount} total={data?.meta?.pagination?.total} isLoading={isLoading || isFetching} onClickPrev={onClickPrev} onClickNext={onClickNext} onClickFirst={onClickFirst} onClickLast={onClickLast} />
       </div>
     </section>
   );

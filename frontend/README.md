@@ -1,27 +1,102 @@
-# React + TypeScript + Vite
+## 📝 Fullstack Todo App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern and responsive Todo Application with full authentication and CRUD capabilities. Built with **React, TypeScript, TailwindCSS** on the frontend and **Strapi** as a powerful headless CMS for the backend.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🔧 Tech Stack
 
-## Expanding the ESLint configuration
+#### Frontend
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+* ⚛️ React + TypeScript
+* 🎨 TailwindCSS
+* 🔄 React Query
+* 🧭 React Router
+* 📝 React Hook Form + Yup (validation)
+* 🌙 Headless UI (modals, transitions)
+* 🔥 React Hot Toast
+* 📱 Axios
 
-- Configure the top-level `parserOptions` property like this:
+#### Backend
 
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
+* 🚀 Strapi (Node.js headless CMS)
+
+---
+
+### 🚀 Features
+
+* 🔐 **Authentication** (Register / Login)
+* ✅ **Add, Edit, Delete** todos
+* 🧪 **Generate fake todos**
+* ⏳ **Pagination** with option to show X todos per page
+* 📅 **Sort todos** by latest or oldest
+* 💡 **Light/Dark Mode** toggle
+* ⚙️ **Persistent UI state** (stored in localStorage)
+
+---
+
+### 📂 Folder Structure
+
+```
+/fullstack-todo-app
+  ├── /frontend
+  │   ├── src/
+  │   └── ...
+  └── /backend
+      └── (Strapi project)
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+---
+
+### 📦 Getting Started
+
+#### 1. Clone the Repo
+
+```bash
+git clone https://github.com/ahmedragab15/Fullstack-Todo-App.git
+cd fullstack-todo-app
+```
+
+#### 2. Start Backend
+
+```bash
+cd backend
+npm install
+npm run develop
+```
+
+#### 3. Start Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+> Make sure the backend runs at `http://localhost:1337` or update the `axios` base URL accordingly in the frontend config.
+
+---
+
+### 📸 Screenshots
+
+> Add images of:
+>
+> * Login/Register form
+> * Todo list with pagination
+> * Modal for editing
+> * Light/Dark mode UI
+
+---
+
+### 📤 Deployment
+
+You can deploy the frontend using:
+
+* [Vercel](https://vercel.com/)
+* [Netlify](https://www.netlify.com/)
+
+And backend using:
+
+* [Render](https://render.com/)
+* [Railway](https://railway.app/)
+* VPS or custom server

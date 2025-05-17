@@ -2,34 +2,30 @@ import { cn } from "../../lib/utils";
 import { VariantProps, cva } from "class-variance-authority";
 import { HTMLAttributes, ReactNode } from "react";
 
-const buttonVariants = cva(
-  "flex items-center justify-center rounded-md font-medium text-white duration-300 dark:text-black disabled:bg-indigo-400 disabled:hover:bg-indigo-400 disabled:cursor-not-allowed",
-  {
-    variants: {
-      variant: {
-        // ** FILLED
-        default: "bg-slate-900 dark:bg-indigo-600 dark:text-white dark:hover:bg-indigo-700",
-        danger: "bg-red-900 dark:bg-[#c2344d] dark:text-white dark:hover:bg-red-700",
-        cancel: "bg-gray-300 text-gray-700 dark:bg-[#f5f5fa] dark:text-dark hover:bg-gray-400 dark:hover:bg-gray-200",
+const buttonVariants = cva("flex items-center justify-center rounded-md font-medium text-white duration-300 dark:text-black disabled:bg-indigo-400 disabled:hover:bg-indigo-400 disabled:cursor-not-allowed", {
+  variants: {
+    variant: {
+      // ** FILLED
+      default: "bg-blue-500 dark:bg-indigo-600 dark:text-white hover:bg-blue-700 dark:hover:bg-indigo-700",
+      danger: "bg-red-700 dark:bg-[#c2344d] dark:text-white hover:bg-red-600 dark:hover:bg-red-700",
+      cancel: "bg-gray-300 text-gray-700 dark:bg-gray-300 dark:text-dark hover:bg-gray-400 dark:hover:bg-gray-400 dark:hover:text-white",
 
-        // ** OUTLINE
-        outline:
-          "border border-indigo-400 hover:text-white bg-transparent text-black hover:border-transparent hover:bg-indigo-600 dark:text-gray-700 dark:hover:text-white",
-      },
-      size: {
-        default: "p-3",
-        sm: "text-sm px-4 py-2",
-      },
-      fullWidth: {
-        true: "w-full",
-      },
+      // ** OUTLINE
+      outline: "border border-blue-500 dark:border-indigo-600 hover:text-white dark:text-white bg-transparent text-black hover:border-transparent hover:bg-blue-500 dark:text-gray-300 dark:hover:bg-indigo-600 dark:hover:text-white",
     },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
+    size: {
+      default: "p-3",
+      sm: "text-sm px-4 py-2",
     },
-  }
-);
+    fullWidth: {
+      true: "w-full",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+    size: "default",
+  },
+});
 
 interface ButtonProps extends HTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   children: ReactNode;

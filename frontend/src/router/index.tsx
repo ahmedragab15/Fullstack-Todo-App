@@ -7,7 +7,6 @@ import HomePage from "../pages";
 import LoginPage from "../pages/Login";
 import RegisterPage from "../pages/Register";
 import TodosPage from "../pages/Todos";
-import ProfilePage from "../pages/Profile";
 
 const storageKey = "loggedInUser";
 const userDataString = localStorage.getItem(storageKey);
@@ -30,14 +29,6 @@ const router = createBrowserRouter(
           element={
             <ProtectedRoute isAllowed={userData?.jwt} redirectPath="/login" data={userData}>
               <TodosPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute isAllowed={userData?.jwt} redirectPath="/login" data={userData}>
-              <ProfilePage/>
             </ProtectedRoute>
           }
         />

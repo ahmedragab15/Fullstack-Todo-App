@@ -4,9 +4,9 @@ import { Toaster } from "react-hot-toast";
 
 const App = () => {
   return (
-    <main>
+    <main className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 ">
       <RouterProvider router={router} />
-      <Toaster/>
+      <Toaster />
     </main>
   );
 };

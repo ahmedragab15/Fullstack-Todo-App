@@ -20,10 +20,13 @@ export interface ITodo {
 export interface IErrorResponse {
   error: {
     message?: string;
-    details?: {
-      errors: {
-        message: string;
-      }[];
-    };
   };
+}
+
+export type Theme = "light" | "dark" | "system";
+
+export interface ITheme {
+  name: string;
+  value: Theme;
+  icon: JSX.Element;
 }
