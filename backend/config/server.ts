@@ -6,6 +6,7 @@ export default ({ env }) => ({
   },
   cors: {
     origin: ["https://fullstack-todo-app-gamma.vercel.app"],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    headers: ["Content-Type", "Authorization", "Origin", "Accept"],
   },
 });

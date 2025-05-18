@@ -7,6 +7,8 @@ export default [
     config: {
       origin: ["https://fullstack-todo-app-gamma.vercel.app"],
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
+      headers: ["Content-Type", "Authorization", "Origin", "Accept"],
+      keepHeadersOnError: true,
     },
   },
   "strapi::poweredBy",
