@@ -1,5 +1,4 @@
-console.log("🛠 CORS middleware is being loaded...");
-export default [
+const middlewares = [
   "strapi::logger",
   "strapi::errors",
   "strapi::security",
@@ -19,3 +18,6 @@ export default [
   "strapi::favicon",
   "strapi::public",
 ];
+
+console.log("🛠 CORS middleware is being loaded...");
+export default middlewares;
