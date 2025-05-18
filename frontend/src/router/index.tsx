@@ -43,7 +43,7 @@ const router = createBrowserRouter(
         <Route
           path="register"
           element={
-            <ProtectedRoute isAllowed={!userData?.jwt} redirectPath="/login" data={userData}>
+            <ProtectedRoute isAllowed={!userData?.jwt} redirectPath="/" data={userData}>
               <RegisterPage />
             </ProtectedRoute>
           }

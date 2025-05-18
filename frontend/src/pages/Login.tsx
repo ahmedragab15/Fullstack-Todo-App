@@ -4,18 +4,13 @@ import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { loginInputs } from "../data";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { loginSchema } from "../validation";
+import { loginSchema } from "../schema";
 import { useState } from "react";
 import axiosInstance from "../config/axios.config";
 import toast from "react-hot-toast";
-import { AxiosError } from "axios";
-import { IErrorResponse } from "../interfaces";
+import axios, { AxiosError } from "axios";
+import { IErrorResponse, IFormLoginInput } from "../interfaces";
 import { Link } from "react-router-dom";
-
-interface IFormInput {
-  identifier: string;
-  password: string;
-}
 
 const LoginPage = () => {
   //* States
@@ -25,14 +20,14 @@ const LoginPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<IFormInput>({ resolver: yupResolver(loginSchema) });
-  
+  } = useForm<IFormLoginInput>({ resolver: yupResolver(loginSchema) });
+
   //* Handlers
-  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+  const onSubmit: SubmitHandler<IFormLoginInput> = async (data) => {
     setIsLoading(true);
     try {
       const res = await axiosInstance.post("/auth/local", data);
-      if (res.status === 200) {
+      if (res.status >= 200 && res.status < 300) {
         toast.success("You are logged successfully, you will be redirected to Home page", {
           duration: 1000,
           position: "bottom-center",
@@ -48,18 +43,21 @@ const LoginPage = () => {
         }, 1500);
       }
     } catch (error) {
-      const errorObject = error as AxiosError<IErrorResponse>;
-      const errorMessage = errorObject?.response?.data?.error?.message;
-
-      toast.error(`${errorMessage || "Something went wrong, please refresh the page and try again"}`, {
-        duration: 3000,
-        position: "bottom-center",
-        style: {
-          background: "#E2241B",
-          color: "#fff",
-          width: "fit-content",
-        },
-      });
+      if (axios.isAxiosError(error)) {
+        const errorObject = error as AxiosError<IErrorResponse>;
+        const errorMessage = errorObject?.response?.data?.error?.message;
+        toast.error(`${errorMessage || "Something went wrong, please refresh the page and try again"}`, {
+          duration: 3000,
+          position: "bottom-center",
+          style: {
+            background: "#E2241B",
+            color: "#fff",
+            width: "fit-content",
+          },
+        });
+      } else {
+        toast.error("Unexpected error occurred.");
+      }
     } finally {
       setIsLoading(false);
     }

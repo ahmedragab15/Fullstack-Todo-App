@@ -2,9 +2,13 @@ import { ChangeEvent, useState } from "react";
 import Paginator from "../components/Paginator";
 import TodoSkeleton from "../components/TodoSkeleton";
 import useCustomQuery from "../hooks/useCustomQuery";
-import { ITodo } from "../interfaces";
+import { IErrorResponse, ITodo } from "../interfaces";
 import Button from "../components/ui/Button";
-import { onGenerateTodos } from "../utils/functions";
+import axiosInstance from "../config/axios.config";
+import { faker } from "@faker-js/faker";
+import Input from "../components/ui/Input";
+import toast from "react-hot-toast";
+import axios, { AxiosError } from "axios";
 
 const TodosPage = () => {
   //* JWT
@@ -16,6 +20,7 @@ const TodosPage = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState("DESC");
+  const [generatedTodosNumber, setGeneratedTodosNumber] = useState(10);
 
   //*fetch data
   const { isLoading, data, isFetching } = useCustomQuery({
@@ -40,6 +45,42 @@ const TodosPage = () => {
 
   const onChangeSortBy = (e: ChangeEvent<HTMLSelectElement>) => setSortBy(e.target.value);
 
+  const onGenerateTodos = async () => {
+    toast.loading(`${generatedTodosNumber} Todos been Generated..`,{
+      duration:1000
+    });
+    for (let i = 0; i < generatedTodosNumber; i++) {
+      try {
+        await axiosInstance.post(
+          "/todos",
+          { data: { title: faker.word.words(5), description: faker.lorem.paragraph(2) } },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const errorObject = error as AxiosError<IErrorResponse>;
+          const errorMessage = errorObject?.response?.data?.error?.message;
+          toast.error(`${errorMessage || "Something went wrong, please try again"}`, {
+            duration: 3000,
+            position: "bottom-center",
+            style: {
+              background: "#E2241B",
+              color: "#fff",
+              width: "fit-content",
+            },
+          });
+        } else {
+          toast.error("Unexpected error occurred.");
+        }
+      }
+    }
+    toast.success(`${generatedTodosNumber} Todos Generated Successfully`)
+  };
+
   //* Renders
   if (isLoading)
     return (
@@ -52,10 +93,13 @@ const TodosPage = () => {
 
   return (
     <section>
-      <div className="flex items-center justify-between space-x-2">
-        <Button size={"sm"} onClick={onGenerateTodos} title="Generate 100 records" isLoading={isLoading || isFetching}>
-          Generate todos
-        </Button>
+      <div className="flex flex-col md:flex-row items-center justify-between gap-2">
+        <div className="flex items-center justify-between space-x-2 text-md">
+          <Input className="w-20 border-2 border-blue-500 dark:border-indigo-600 rounded-md p-2 dark:bg-gray-800" max={100} type="number" value={generatedTodosNumber} onChange={(e) => (+e.target.value >= 100 ? setGeneratedTodosNumber(100) : setGeneratedTodosNumber(+e.target.value))} onKeyDown={(e) => e.key === "Enter" && onGenerateTodos()} />
+          <Button size={"sm"} onClick={onGenerateTodos} title="Generate 100 records" isLoading={isLoading || isFetching}>
+            Generate {generatedTodosNumber} todos
+          </Button>
+        </div>
 
         <div className="flex items-center justify-between space-x-2 text-md">
           <select className="border-2 border-blue-500 dark:border-indigo-600 rounded-md p-2 dark:bg-gray-800" value={sortBy} onChange={onChangeSortBy}>
@@ -74,12 +118,12 @@ const TodosPage = () => {
         </div>
       </div>
 
-      <div className="py-20 space-y-6">
+      <div className="py-12 space-y-6">
         {data.data.length ? (
           data.data.map((todo: ITodo) => (
-            <div key={todo.documentId} className="flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700 duration-300 p-3 rounded-md even:bg-gray-200 dark:even:bg-gray-800 text-gray-700 dark:text-white">
-              <h3 className="w-full font-semibold">{todo.title}</h3>
-              <p className="w-full font-semibold">{todo.description}</p>
+            <div key={todo.documentId} className="flex flex-col md:flex-row items-center justify-center md:justify-between hover:bg-gray-300 dark:hover:bg-gray-600 duration-300 p-3 rounded-md bg-gray-100 dark:bg-gray-700 even:bg-gray-200 dark:even:bg-gray-800 text-gray-800 dark:text-white">
+              <h3 className="w-full font-semibold text-center md:text-left">{todo.title}</h3>
+              <p className="w-full font-semibold text-center md:text-left py-3">{todo.description}</p>
             </div>
           ))
         ) : (

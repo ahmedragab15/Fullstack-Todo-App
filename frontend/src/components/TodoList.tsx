@@ -4,10 +4,11 @@ import Modal from "./ui/Modal";
 import { ChangeEvent, FormEvent, useState } from "react";
 import Input from "./ui/Input";
 import Textarea from "./ui/Textarea";
-import { ITodo } from "../interfaces";
+import { IErrorResponse, ITodo } from "../interfaces";
 import axiosInstance from "../config/axios.config";
 import TodoSkeleton from "./TodoSkeleton";
-import { onGenerateTodos } from "../utils/functions";
+import toast from "react-hot-toast";
+import axios, { AxiosError } from "axios";
 
 const TodoList = () => {
   //* JWT
@@ -17,6 +18,13 @@ const TodoList = () => {
   const token = userData?.jwt;
 
   const [queryVersion, setQueryVersion] = useState(1);
+
+  //*add todo
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [todoToAdd, setTodoToAdd] = useState({
+    title: "",
+    description: "",
+  });
 
   //*Edit Todo
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -29,12 +37,8 @@ const TodoList = () => {
 
   //*remove todo
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
-
-  //*add todo
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [todoToAdd, setTodoToAdd] = useState({
-    title: "",
-    description: "",
+  const [todoToRemove, setTodoToRemove] = useState({
+    documentId: "",
   });
 
   //*fetch data
@@ -49,11 +53,8 @@ const TodoList = () => {
   });
 
   //* Handlers
-
   //*Add
-  const onOpenAddModal = () => {
-    setIsAddModalOpen(true);
-  };
+  const onOpenAddModal = () => setIsAddModalOpen(true);
 
   const onCloseAddModal = () => {
     setTodoToAdd({
@@ -76,24 +77,41 @@ const TodoList = () => {
     setIsUpdating(true);
     const { title, description } = todoToAdd;
     try {
-      if (title.trim() && description.trim()) {
-        const res = await axiosInstance.post(
-          `/todos`,
-          { data: { title, description, user: [userData.user.id] } },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (res.status >= 200 && res.status < 300) {
-          onCloseAddModal();
-          setQueryVersion((prev) => prev + 1);
-        }
+      if (!title.trim() || !description.trim()) {
+        toast.error("Please fill in both title and description.");
+        setIsUpdating(false);
+        return;
       }
-      // todo toaster "fill the inputs"
+      const res = await axiosInstance.post(
+        `/todos`,
+        { data: { title, description, user: [userData.user.id] } },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.status >= 200 && res.status < 300) {
+        onCloseAddModal();
+        setQueryVersion((prev) => prev + 1);
+        toast.success("Todo added successfully!")
+      }
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        const errorObject = error as AxiosError<IErrorResponse>;
+        const errorMessage = errorObject?.response?.data?.error?.message;
+        toast.error(`${errorMessage || "Something went wrong, please try again"}`, {
+          duration: 3000,
+          position: "bottom-center",
+          style: {
+            background: "#E2241B",
+            color: "#fff",
+            width: "fit-content",
+          },
+        });
+      } else {
+        toast.error("Unexpected error occurred.");
+      }
     } finally {
       setIsUpdating(false);
     }
@@ -127,40 +145,55 @@ const TodoList = () => {
     setIsUpdating(true);
     const { title, description, documentId } = todoToEdit;
     try {
-      if (title.trim() && description.trim()) {
-        const res = await axiosInstance.put(
-          `/todos/${documentId}`,
-          { data: { title, description } },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (res.status >= 200 && res.status < 300) {
-          onCloseEditModal();
-          setQueryVersion((prev) => prev + 1);
-        }
+      if (!title.trim() || !description.trim()) {
+        toast.error("Please fill in both title and description.");
+        setIsUpdating(false);
+        return;
       }
-      // todo toaster "fill the inputs"
+      const res = await axiosInstance.put(
+        `/todos/${documentId}`,
+        { data: { title, description } },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.status >= 200 && res.status < 300) {
+        onCloseEditModal();
+        setQueryVersion((prev) => prev + 1);
+        toast.success("Todo updated successfully!");
+      }
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        const errorObject = error as AxiosError<IErrorResponse>;
+        const errorMessage = errorObject?.response?.data?.error?.message;
+        toast.error(`${errorMessage || "Something went wrong, please try again"}`, {
+          duration: 3000,
+          position: "bottom-center",
+          style: {
+            background: "#E2241B",
+            color: "#fff",
+            width: "fit-content",
+          },
+        });
+      } else {
+        toast.error("Unexpected error occurred.");
+      }
     } finally {
       setIsUpdating(false);
     }
   };
 
   //*Remove
-  const onOpenRemoveModal = (todo: ITodo) => {
-    setTodoToEdit(todo);
+  const onOpenRemoveModal = (documentId: string) => {
+    setTodoToRemove({documentId});
     setIsRemoveModalOpen(true);
   };
 
   const onCloseRemoveModal = () => {
-    setTodoToEdit({
-      documentId: "",
-      title: "",
-      description: "",
+    setTodoToRemove({
+      documentId: ""
     });
     setIsRemoveModalOpen(false);
   };
@@ -168,7 +201,7 @@ const TodoList = () => {
   const onRemoveTodo = async () => {
     setIsUpdating(true);
     try {
-      const res = await axiosInstance.delete(`/todos/${todoToEdit.documentId}`, {
+      const res = await axiosInstance.delete(`/todos/${todoToRemove.documentId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -176,9 +209,21 @@ const TodoList = () => {
       if (res.status >= 200 && res.status < 300) {
         onCloseRemoveModal();
         setQueryVersion((prev) => prev + 1);
+        toast.success("Todo removed successfully!");
       }
     } catch (error) {
-      console.log(error);
+      const errorObject = error as AxiosError<IErrorResponse>;
+      const errorMessage = errorObject?.response?.data?.error?.message;
+
+      toast.error(`${errorMessage || "Something went wrong, please try again"}`, {
+        duration: 3000,
+        position: "bottom-center",
+        style: {
+          background: "#E2241B",
+          color: "#fff",
+          width: "fit-content",
+        },
+      });
     } finally {
       setIsUpdating(false);
     }
@@ -195,7 +240,7 @@ const TodoList = () => {
     );
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1 pb-12">
       <div className="w-fit mx-auto my-10">
         {isLoading ? (
           <div className="flex items-center space-x-2">
@@ -207,23 +252,20 @@ const TodoList = () => {
             <Button size={"sm"} onClick={onOpenAddModal}>
               Post new todo
             </Button>
-            <Button variant={"outline"} size={"sm"} isLoading={isUpdating} onClick={onGenerateTodos}>
-              Generate todos
-            </Button>
           </div>
         )}
       </div>
 
       {data.todos.length ? (
         data.todos.map((todo: ITodo) => (
-          <div key={todo.documentId} className="flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700 duration-300 p-3 rounded-md even:bg-gray-200 dark:even:bg-gray-800 text-gray-700 dark:text-white">
-            <p className="w-full font-semibold">{todo.title}</p>
-            <p className="w-full font-semibold">{todo.description}</p>
-            <div className="flex items-center justify-end w-full space-x-3">
+          <div key={todo.documentId} className="flex flex-col md:flex-row items-center justify-center md:justify-between hover:bg-gray-300 dark:hover:bg-gray-600 duration-300 p-3 rounded-md bg-gray-100 dark:bg-gray-700 even:bg-gray-200 dark:even:bg-gray-800 text-gray-800 dark:text-white">
+            <p className="w-full font-semibold text-center md:text-left">{todo.title}</p>
+            <p className="w-full font-semibold text-center md:text-left py-3">{todo.description}</p>
+            <div className="flex items-center justify-center md:justify-end w-full space-x-3">
               <Button size={"sm"} onClick={() => onOpenEditModal(todo)}>
                 Edit
               </Button>
-              <Button variant={"danger"} size={"sm"} onClick={() => onOpenRemoveModal(todo)}>
+              <Button variant={"danger"} size={"sm"} onClick={() => onOpenRemoveModal(todo.documentId)}>
                 Remove
               </Button>
             </div>

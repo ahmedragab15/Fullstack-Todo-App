@@ -1,9 +1,8 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import Button from "./ui/Button";
 import ThemeSwitcher from "./ThemeSwitcher";
 
 const Navbar = () => {
-  const { pathname } = useLocation();
   const storageKey = "loggedInUser";
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
@@ -12,13 +11,13 @@ const Navbar = () => {
     localStorage.removeItem(storageKey);
 
     setTimeout(() => {
-      location.replace(pathname);
+      location.replace("/");
     }, 1000);
   };
 
   return (
     <nav className="max-w-2xl mx-auto pt-7 mb-20 px-3 pb-5">
-      <ul className="flex items-center justify-between text-gray-700 dark:text-white">
+      <ul className="flex items-center flex-col md:flex-row justify-between text-gray-700 dark:text-white gap-2">
         <li className="duration-200 font-semibold text-md flex items-center gap-4">
           <NavLink to="/">Home</NavLink>
           <ThemeSwitcher />
