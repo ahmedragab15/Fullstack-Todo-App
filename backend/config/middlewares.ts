@@ -1,3 +1,4 @@
+console.log("🛠 CORS middleware is being loaded...");
 export default [
   "strapi::logger",
   "strapi::errors",
@@ -5,7 +6,7 @@ export default [
   {
     name: "strapi::cors",
     config: {
-      origin: ["*"],
+      origin: ["https://fullstack-todo-app-gamma.vercel.app"],
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
       headers: ["Content-Type", "Authorization", "Origin", "Accept"],
       keepHeadersOnError: true,
