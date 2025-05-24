@@ -20,6 +20,8 @@ A modern and responsive Todo Application with full authentication and CRUD capab
 #### Backend
 
 * 🚀 Strapi (Node.js headless CMS)
+* 📝 PostgreSQL (Database)
+* 🔐 JWT (Auth token generation)
 
 ---
 
@@ -51,12 +53,6 @@ A modern and responsive Todo Application with full authentication and CRUD capab
 
    <img src="frontend/public/todo-pagination.png" >
  
----
-
-## 🚀 Live Demo
-
-[🔗 View Live Demo]()
-
 ---
 
 ### 📦 Getting Started
