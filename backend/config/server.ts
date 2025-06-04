@@ -4,6 +4,8 @@ export default ({ env }) => ({
   app: {
     keys: env.array("APP_KEYS"),
   },
-  // إضافة URL للـ production
   url: env("PUBLIC_URL", env("NODE_ENV") === "production" ? undefined : "http://localhost:1337"),
+  webhooks: {
+    populateRelations: env.bool("WEBHOOKS_POPULATE_RELATIONS", false),
+  },
 });

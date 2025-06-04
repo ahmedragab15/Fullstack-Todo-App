@@ -119,7 +119,7 @@ const TodosPage = () => {
       </div>
 
       <div className="py-12 space-y-6">
-        {data.data.length ? (
+        {data?.data?.length > 0 ? (
           data.data.map((todo: ITodo) => (
             <div key={todo.documentId} className="flex flex-col md:flex-row items-center justify-center md:justify-between hover:bg-gray-300 dark:hover:bg-gray-600 duration-300 p-3 rounded-md bg-gray-100 dark:bg-gray-700 even:bg-gray-200 dark:even:bg-gray-800 text-gray-800 dark:text-white">
               <h3 className="w-full font-semibold text-center md:text-left">{todo.title}</h3>
