@@ -1,24 +1,36 @@
-const middlewares = [
-  "strapi::logger",
+module.exports = [
   "strapi::errors",
-  "strapi::security",
-  // {
-  //   name: "strapi::cors",
-  //   config: {
-  //     origin: ["https://fullstack-todo-app-gamma.vercel.app"],
-  //     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
-  //     headers: ["Content-Type", "Authorization", "Origin", "Accept"],
-  //     keepHeadersOnError: true,
-  //   },
-  // },
-  "strapi::cors",
+  {
+    name: "strapi::security",
+    config: {
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          "connect-src": ["'self'", "https:"],
+          "img-src": ["'self'", "data:", "blob:", "https:"],
+          "media-src": ["'self'", "data:", "blob:", "https:"],
+          upgradeInsecureRequests: null,
+        },
+      },
+    },
+  },
+  {
+    name: "strapi::cors",
+    config: {
+      enabled: true,
+      headers: "*",
+      origin: [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "https://fullstack-todo-app-gamma.vercel.app",
+      ],
+    },
+  },
   "strapi::poweredBy",
+  "strapi::logger",
   "strapi::query",
   "strapi::body",
   "strapi::session",
   "strapi::favicon",
   "strapi::public",
 ];
-
-console.log("🛠 CORS middleware is being loaded...");
-export default middlewares;

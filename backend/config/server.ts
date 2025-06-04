@@ -4,9 +4,6 @@ export default ({ env }) => ({
   app: {
     keys: env.array("APP_KEYS"),
   },
-  // cors: {
-  //   origin: ["https://fullstack-todo-app-gamma.vercel.app"],
-  //   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  //   headers: ["Content-Type", "Authorization", "Origin", "Accept"],
-  // },
+  // إضافة URL للـ production
+  url: env("PUBLIC_URL", env("NODE_ENV") === "production" ? undefined : "http://localhost:1337"),
 });
