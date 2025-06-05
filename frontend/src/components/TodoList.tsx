@@ -42,7 +42,7 @@ const TodoList = () => {
   });
 
   //*fetch data
-  const { isLoading, data } = useCustomQuery({
+  const { isLoading, data,isRefetching } = useCustomQuery({
     queryKey: ["todoList", `${queryVersion}`],
     url: "/users/me?populate=todos",
     config: {
@@ -230,7 +230,7 @@ const TodoList = () => {
   };
 
   //* Renders
-  if (isLoading)
+  if (isLoading && !isRefetching)
     return (
       <div className="space-y-1 p-3">
         {Array.from({ length: 3 }, (_, idx) => (

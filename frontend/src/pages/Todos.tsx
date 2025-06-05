@@ -23,7 +23,7 @@ const TodosPage = () => {
   const [generatedTodosNumber, setGeneratedTodosNumber] = useState(10);
 
   //*fetch data
-  const { isLoading, data, isFetching } = useCustomQuery({
+  const { isLoading, data, isFetching,isRefetching } = useCustomQuery({
     queryKey: [`todos-page-${page}`, `${pageSize}`, `${sortBy}`],
     url: `/todos?pagination[pageSize]=${pageSize}&pagination[page]=${page}&sort=createdAt:${sortBy}`,
     config: {
@@ -82,7 +82,7 @@ const TodosPage = () => {
   };
 
   //* Renders
-  if (isLoading)
+  if ((isLoading && !isRefetching))
     return (
       <div className="space-y-1 p-3">
         {Array.from({ length: 3 }, (_, idx) => (
