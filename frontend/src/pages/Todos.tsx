@@ -23,7 +23,7 @@ const TodosPage = () => {
   const [generatedTodosNumber, setGeneratedTodosNumber] = useState(10);
 
   //*fetch data
-  const { isLoading, data, isFetching,isRefetching } = useCustomQuery({
+  const { isLoading, data, status, isRefetching } = useCustomQuery({
     queryKey: [`todos-page-${page}`, `${pageSize}`, `${sortBy}`],
     url: `/todos?pagination[pageSize]=${pageSize}&pagination[page]=${page}&sort=createdAt:${sortBy}`,
     config: {
@@ -46,8 +46,8 @@ const TodosPage = () => {
   const onChangeSortBy = (e: ChangeEvent<HTMLSelectElement>) => setSortBy(e.target.value);
 
   const onGenerateTodos = async () => {
-    toast.loading(`${generatedTodosNumber} Todos been Generated..`,{
-      duration:1000
+    toast.loading(`${generatedTodosNumber} Todos been Generated..`, {
+      duration: 1000,
     });
     for (let i = 0; i < generatedTodosNumber; i++) {
       try {
@@ -78,25 +78,25 @@ const TodosPage = () => {
         }
       }
     }
-    toast.success(`${generatedTodosNumber} Todos Generated Successfully`)
+    toast.success(`${generatedTodosNumber} Todos Generated Successfully`);
   };
 
   //* Renders
-  if ((isLoading && !isRefetching))
-    return (
-      <div className="space-y-1 p-3">
-        {Array.from({ length: 3 }, (_, idx) => (
-          <TodoSkeleton key={idx} />
-        ))}
-      </div>
-    );
+    if (status === "pending")
+      return (
+        <div className="space-y-1 p-3">
+          {Array.from({ length: 8 }, (_, idx) => (
+            <TodoSkeleton key={idx} />
+          ))}
+        </div>
+      );
 
   return (
     <section>
       <div className="flex flex-col md:flex-row items-center justify-between gap-2">
         <div className="flex items-center justify-between space-x-2 text-md">
           <Input className="w-20 border-2 border-blue-500 dark:border-indigo-600 rounded-md p-2 dark:bg-gray-800" max={100} type="number" value={generatedTodosNumber} onChange={(e) => (+e.target.value >= 100 ? setGeneratedTodosNumber(100) : setGeneratedTodosNumber(+e.target.value))} onKeyDown={(e) => e.key === "Enter" && onGenerateTodos()} />
-          <Button size={"sm"} onClick={onGenerateTodos} title="Generate 100 records" isLoading={isLoading || isFetching}>
+          <Button size={"sm"} onClick={onGenerateTodos} title="Generate 100 records" isLoading={isLoading || isRefetching}>
             Generate {generatedTodosNumber} todos
           </Button>
         </div>
@@ -129,7 +129,7 @@ const TodosPage = () => {
         ) : (
           <h3>No todos yet!</h3>
         )}
-        <Paginator page={page} pageCount={data?.meta?.pagination?.pageCount} total={data?.meta?.pagination?.total} isLoading={isLoading || isFetching} onClickPrev={onClickPrev} onClickNext={onClickNext} onClickFirst={onClickFirst} onClickLast={onClickLast} />
+        <Paginator page={page} pageCount={data?.meta?.pagination?.pageCount} total={data?.meta?.pagination?.total} isLoading={isLoading || isRefetching} onClickPrev={onClickPrev} onClickNext={onClickNext} onClickFirst={onClickFirst} onClickLast={onClickLast} />
       </div>
     </section>
   );

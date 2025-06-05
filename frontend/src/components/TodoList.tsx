@@ -17,8 +17,6 @@ const TodoList = () => {
   const userData = userDataString ? JSON.parse(userDataString) : null;
   const token = userData?.jwt;
 
-  const [queryVersion, setQueryVersion] = useState(1);
-
   //*add todo
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [todoToAdd, setTodoToAdd] = useState({
@@ -42,8 +40,8 @@ const TodoList = () => {
   });
 
   //*fetch data
-  const { isLoading, data,isRefetching } = useCustomQuery({
-    queryKey: ["todoList", `${queryVersion}`],
+  const { isLoading, data, status, isRefetching, refetch } = useCustomQuery({
+    queryKey: ["todoList"],
     url: "/users/me?populate=todos",
     config: {
       headers: {
@@ -93,8 +91,8 @@ const TodoList = () => {
       );
       if (res.status >= 200 && res.status < 300) {
         onCloseAddModal();
-        setQueryVersion((prev) => prev + 1);
-        toast.success("Todo added successfully!")
+        await refetch();
+        toast.success("Todo added successfully!");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -161,7 +159,7 @@ const TodoList = () => {
       );
       if (res.status >= 200 && res.status < 300) {
         onCloseEditModal();
-        setQueryVersion((prev) => prev + 1);
+        await refetch();
         toast.success("Todo updated successfully!");
       }
     } catch (error) {
@@ -187,13 +185,13 @@ const TodoList = () => {
 
   //*Remove
   const onOpenRemoveModal = (documentId: string) => {
-    setTodoToRemove({documentId});
+    setTodoToRemove({ documentId });
     setIsRemoveModalOpen(true);
   };
 
   const onCloseRemoveModal = () => {
     setTodoToRemove({
-      documentId: ""
+      documentId: "",
     });
     setIsRemoveModalOpen(false);
   };
@@ -208,7 +206,7 @@ const TodoList = () => {
       });
       if (res.status >= 200 && res.status < 300) {
         onCloseRemoveModal();
-        setQueryVersion((prev) => prev + 1);
+        await refetch();
         toast.success("Todo removed successfully!");
       }
     } catch (error) {
@@ -230,10 +228,10 @@ const TodoList = () => {
   };
 
   //* Renders
-  if (isLoading && !isRefetching)
+  if (status === "pending")
     return (
       <div className="space-y-1 p-3">
-        {Array.from({ length: 3 }, (_, idx) => (
+        {Array.from({ length: 8 }, (_, idx) => (
           <TodoSkeleton key={idx} />
         ))}
       </div>
@@ -241,6 +239,11 @@ const TodoList = () => {
 
   return (
     <div className="space-y-1 pb-12">
+      {isRefetching && (
+        <div className="flex justify-center items-center py-4">
+          <span className="text-sm text-gray-500 animate-pulse">🔄 Updating...</span>
+        </div>
+      )}
       <div className="w-fit mx-auto my-10">
         {isLoading ? (
           <div className="flex items-center space-x-2">
