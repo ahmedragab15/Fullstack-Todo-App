@@ -19,7 +19,11 @@ module.exports = [
     config: {
       enabled: true,
       headers: "*",
-      origin: "*",
+      origin: [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "https://fullstack-todo-app-gamma.vercel.app",
+      ],
     },
   },
   "strapi::poweredBy",

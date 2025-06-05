@@ -55,6 +55,10 @@ A modern and responsive Todo Application with full authentication and CRUD capab
  
 ---
 
+### 🚀 Live Demo
+
+[🔗 View Live Demo](https://fullstack-todo-app-gamma.vercel.app)
+
 ### 📦 Getting Started
 
 #### 1. Clone the Repo
