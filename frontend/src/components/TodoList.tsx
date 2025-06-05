@@ -239,11 +239,6 @@ const TodoList = () => {
 
   return (
     <div className="space-y-1 pb-12">
-      {isRefetching && (
-        <div className="flex justify-center items-center py-4">
-          <span className="text-sm text-gray-500 animate-pulse">🔄 Updating...</span>
-        </div>
-      )}
       <div className="w-fit mx-auto my-10">
         {isLoading ? (
           <div className="flex items-center space-x-2">
@@ -255,6 +250,11 @@ const TodoList = () => {
             <Button size={"sm"} onClick={onOpenAddModal}>
               Post new todo
             </Button>
+          </div>
+        )}
+        {isRefetching && (
+          <div className="flex justify-center items-center py-4 my-6">
+            <span className="text-sm text-gray-500 animate-pulse">🔄 Updating...</span>
           </div>
         )}
       </div>
